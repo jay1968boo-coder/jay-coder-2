@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warung Sulistia</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,700;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- My Style -->
+    <link rel="stylesheet" href="food.css" />
+
+    <!-- App JS -->
+    <script src="cart.js" async></script>
+
+    <!-- AlpineJS -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <!-- Navbar Start -->
+    <nav class="navbar" x-data>
+      <a href="#" class="navbar-logo">warung<span>Sulistia</span></a>
+
+      <div class="navbar-nav">
+        <a href="#menu">Menu</a>
+        <a href="#about">Tentang Kami</a>
+        <a href="#contact">Kontak</a>
+      </div>
+
+      <div class="navbar-extra">
+        <a href="#" id="search-button"><i data-feather="search"></i></a>
+        <a href="#" id="shopping-cart-button">
+          <i data-feather="shopping-cart"></i>
+          <span
+            class="quantity-badge"
+            x-show="$store.cart.quantity"
+            x-text="$store.cart.quantity"
+          ></span>
+        </a>
+        <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
+      </div>
+
+      <!-- Search Form Start -->
+      <div class="search-form">
+        <input
+          type="search"
+          id="search-box"
+          placeholder="Cari menu..."
+          x-model="$store.search.keyword"
+          @keyup.enter="document.querySelector('#menus').scrollIntoView({ behavior: 'smooth' })"
+        />
+        <label for="search-box"><i data-feather="search"></i></label>
+      </div>
+      <!-- Search Form End -->
+
+      <!-- Shopping Cart Start -->
+      <div class="shopping-cart">
+        <!-- LOOP PRODUK KERANJANG -->
+        <template x-for="(item, index) in $store.cart.items" :key="index">
+          <div class="cart-item">
+            <img :src="`${item.img}`" :alt="item.name" />
+            <div class="item-detail">
+              <h3 x-text="item.name"></h3>
+              <div class="item-price">
+                <span x-text="rupiah(item.price)"></span> &times;
+                <button
+                  class="remove-item"
+                  @click="$store.cart.remove(item.id)"
+                >
+                  &minus;
+                </button>
+                <span x-text="item.quantity"></span>
+                <button class="add-item" @click="$store.cart.add(item)">
+                  &plus;
+                </button>
+                &equals;
+                <span x-text="rupiah(item.total)"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- STATUS KERANJANG -->
+        <h4 x-show="!$store.cart.items.length" style="margin: 1rem">
+          Keranjang Kosong
+        </h4>
+        <h4 x-show="$store.cart.items.length">
+          Total : <span x-text="rupiah($store.cart.total)"></span>
+        </h4>
+
+        <!-- FORM CHECKOUT -->
+        <div class="form-container" x-data="{ name: '', address: '' }">
+          <!-- FORM UTAMA: Hanya muncul jika ada item di dalam keranjang belanja -->
+          <form
+            id="checkoutForm"
+            x-show="$store.cart.items.length > 0"
+            @submit.prevent="kirimData($event)"
+          >
+            <input
+              type="hidden"
+              name="items"
+              :value="JSON.stringify($store.cart.items)"
+            />
+            <input type="hidden" name="total" :value="$store.cart.total" />
+
+            <h5>Customer Detail</h5>
+
+            <label for="name">
+              <span>Nama : </span>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                x-model="name"
+                required
+              />
+            </label>
+
+            <label for="address">
+              <span>Alamat : </span>
+              <input
+                type="text"
+                name="address"
+                id="address"
+                autocomplete="street-address"
+                x-model="address"
+                required
+              />
+            </label>
+
+            <button
+              class="checkout-button"
+              :class="{ 'disabled': !name || !address }"
+              type="submit"
+              id="checkout-button"
+              :disabled="!name || !address"
+            >
+              Checkout
+            </button>
+          </form>
+        </div>
+      </div>
+      <!-- Shopping Cart End -->
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Menu Section Start -->
+    <section class="menus" id="menu" x-data="menus">
+      <h2>Produk <span>Unggulan</span> Kami</h2>
+
+      <div class="row">
+        <template
+          x-for="(item, index) in filteredItems"
+          :key="`menu-${item.id}-${index}`"
+        >
+          <div class="menu-card">
+            <div class="menu-icons">
+              <!-- Tombol Tambah Keranjang -->
+              <a href="#" @click.prevent="$store.cart.add(item)">
+                <svg
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path
+                    d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+                  ></path>
+                </svg>
+              </a>
+
+              <!-- Tombol Detail Modal -->
+              <a
+                href="#"
+                class="item-detail-button"
+                :data-id="item.id"
+                :data-name="item.name"
+                :data-img="item.img"
+                :data-price="typeof rupiah === 'function' ? rupiah(item.price) : `Rp ${item.price}`"
+                :data-description="item.desc || 'Deskripsi lezat belum tersedia.'"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </a>
+            </div>
+
+            <div class="menu-image">
+              <img :src="item.img" :alt="item.name" />
+            </div>
+
+            <div class="menu-content">
+              <h3 x-text="item.name"></h3>
+              <div class="menu-stars">
+                <span>★</span><span>★</span><span>★</span><span>★</span
+                ><span>★</span>
+              </div>
+              <div class="menu-price">
+                <span
+                  x-text="typeof rupiah === 'function' ? rupiah(item.price) : `Rp ${item.price}`"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+    <!-- Menu Section End -->
+
+    <!-- About Section Start -->
+    <section id="about" class="about">
+      <h2><span>Tentang</span> Kami</h2>
+
+      <div class="row">
+        <div class="about-img">
+          <img src="img/tempura-chili-oil.jpg" alt="Tentang Kami" />
+        </div>
+        <div class="content">
+          <h3>Kenapa memilih Warung Sulistia</h3>
+          <p>
+            Kami menyajikan aneka hidangan menarik dan modern berkualitas dengan
+            resep turun-temurun, bahan bahan pilihan, membuat masakan kaya akan
+            rasa.
+          </p>
+          <p>
+            Nikmati suasana makan yang nyaman dan pelayanan terbaik untuk Anda
+            dan keluarga.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- About Section End -->
+
+    <!-- Modal Box Item Detail start -->
+    <div class="modal" id="item-detail-modal" style="display: none">
+      <div class="modal-container">
+        <!-- Berikan id pada tombol close -->
+        <a href="#" class="close-icon" id="close-modal-btn">
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <use href="img/feather-sprite.svg#x" />
+          </svg>
+        </a>
+        <div class="modal-content">
+          <!-- Tambahkan class modal-img -->
+          <img class="modal-img" src="" alt="" />
+          <div class="menu-content">
+            <!-- Tambahkan class modal-title -->
+            <h3 class="modal-title"></h3>
+            <!-- 1. UBAH DI SINI: Tambahkan class modal-desc -->
+            <p class="modal-desc"></p>
+            <!-- <p class="modal-desc">Deskripsi Produk</p> -->
+            <div class="menu-stars">
+              <svg width="24" height="24" fill="currentColor">
+                <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor">
+                <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor">
+                <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor">
+                <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor">
+                <use href="img/feather-sprite.svg#star" />
+              </svg>
+            </div>
+            <!-- Tambahkan class modal-price -->
+            <div class="menu-price"><span class="modal-price"></span></div>
+            <a href="#" id="modal-add-to-cart-btn">
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <use href="img/feather-sprite.svg#shopping-cart" />
+              </svg>
+              <span>add to cart</span>
+            </a>
+            <!-- <a href="#"><i data-feather="shopping-cart"></i><span>add to cart</span></a>   -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Box Item Detail end -->
+
+    <!-- Contact Section Start -->
+    <section id="contact" class="contact">
+      <h2><span>Kontak</span> Kami</h2>
+      <p>Hubungi kami untuk pemesanan atau pertanyaan lebih lanjut.</p>
+
+      <div class="row">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d304.09544409282694!2d104.76398198488057!3d-4.9512996133875715!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e4759000476268d%3A0x2a9ea61a7c662a50!2ssubik!5e0!3m2!1sid!2sid!4v1789043793420!5m2!1sid!2sid"
+          width="100%"
+          height="450"
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+
+        <!-- <form action="" method="POST">
+                <div class="input-group">
+                    <i data-feather="user"></i>
+                    <input type="text" placeholder="Nama">
+                </div>
+                <div class="input-group">
+                    <i data-feather="mail"></i>
+                    <input type="email" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <i data-feather="address"></i>
+                    <input type="tel" placeholder="No HP">
+                </div>
+                <button type="submit" class="btn">Kirim Pesan</button>
+            </form> -->
+      </div>
+    </section>
+    <!-- Contact Section End -->
+
+    <!-- Footer Start -->
+    <footer>
+      <div class="socials">
+        <a href="#"><i data-feather="instagram"></i></a>
+        <a href="#"><i data-feather="twitter"></i></a>
+        <a href="#"><i data-feather="facebook"></i></a>
+      </div>
+
+      <div class="links">
+        <a href="#menu">Menu</a>
+        <a href="#about">Tentang Kami</a>
+      </div>
+
+      <div class="credit">
+        <p>Created by <a href="#">Warung Sulistia</a>. | &copy; 2026.</p>
+      </div>
+    </footer>
+    <!-- Footer End -->
+
+    <!-- Feather Icons Init -->
+    <script>
+      feather.replace();
+    </script>
+
+    <!-- My JavaScript -->
+    <script src="food.js"></script>
+  </body>
+</html>
