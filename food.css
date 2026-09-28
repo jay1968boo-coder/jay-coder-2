@@ -262,7 +262,7 @@ body{
     min-height: 100vh;
     display: flex;
     align-items: center;
-    background-image: url('../img/header-img1.jpg');
+    background-image: url("img/header-img1.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -346,7 +346,7 @@ body{
 
 .about .row .about-img img{
     width: 100%;
-    mask-image: url(`../img/splat-beans.svg`);
+    mask-image: url("img/splat-beans.svg");
     mask-size: 100%;
     mask-repeat: no-repeat;
     mask-position: center;
