@@ -257,6 +257,63 @@ body{
     cursor: not-allowed;
 }
 
+/* Hero Section */
+.hero{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-image: url('../img/header-img1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(rgba(0,0,0,1) 85%, rgba(0,0,0,0));
+}
+
+.hero .content{
+    padding: 1.4rem 7%;
+    /* max-width: 60rem; */
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    top: 150px;
+}
+
+.hero .content h1{
+    font-size: 5em;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+    line-height: 1.2;
+}
+
+.hero .content h1 span {
+    color: var(--primary);
+}
+
+.hero .content p{
+    font-size: 1.6rem;
+    margin-top: 1rem;
+    line-height: 1.4;
+    font-weight: 300;     /* yang asli font-weight: 100: */
+    text-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+    mix-blend-mode: difference;
+}
+
+.hero .content .cta{
+    margin-top: 1rem;
+    display: inline-block;
+    padding: 1rem 3rem;
+    font-size: 1.4rem;
+    color: #fff;
+    background-color: var(--primary);
+    border-radius: 0.5rem;
+    text-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+}
+
+.hero .content .cta:hover {
+    background-color: #966e43; /* Efek hover gelap sedikit saat tombol disentuh */
+}
 
 /* About Section */
 .about,
@@ -290,7 +347,7 @@ body{
 .about .row .about-img img{
     width: 100%;
     mask-image: url(../img/splat-beans.svg);
-    mask-size: 70%;
+    mask-size: 100%;
     mask-repeat: no-repeat;
     mask-position: center;
 }
