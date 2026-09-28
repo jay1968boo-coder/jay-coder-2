@@ -38,7 +38,7 @@ document.addEventListener("alpine:init", () => {
       {
         id: 5,
         name: "Tempura Chili Oil",
-        img: "img/tempura-chili-oil.jpg",
+        img: "img/tempura-chili.jpg",
         price: 15000,
         desc: "Tempura Chili Oil menggabungkan tempura goreng renyah dan lainnya. Kombinasi ini populer sebagai camilan, makanan jalanan, atau pembuka, menawarkan keseimbangan antara tekstur renyah dan rasa pedas serta gurih.",
       },
