@@ -67,7 +67,7 @@ document.addEventListener("alpine:init", () => {
         id: 9,
         name: "Es Marimas",
         img: "img/marimas.jpg",
-        price: 5000,
+        price: 2000,
         desc: "Minuman buah sachet instan yang menyegarkan, disajikan dingin di kala cuaca panas.",
       },
     ],
